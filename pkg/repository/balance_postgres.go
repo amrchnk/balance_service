@@ -30,15 +30,17 @@ func (r *BalancePostgres) ChangeUserBalance(input models.Balance, tr_type string
     }else if tr_type=="decrease"{
         Query=fmt.Sprint("INSERT INTO balance (user_id,balance) VALUES ($1,$2) ON CONFLICT (user_id) DO UPDATE SET balance=(select balance from balance where user_id = $1) - $2 RETURNING balance")
     }
-
     row:=tx.QueryRow(Query,input.UserId,input.Balance)
-	err=row.Scan(&balance)
-
-	if err!=nil{
-	    tx.Rollback()
-	    s:=fmt.Sprintf("%f", balance)
+    err=row.Scan(&balance)
+    if err!=nil{
+        tx.Rollback()
+        s:=fmt.Sprintf("%f", balance)
         return s,err
-	}
+    }
+// 	fmt.Println("result ",row)
+
     s:=fmt.Sprintf("%f", balance)
-    return s,nil
+//     println(s)
+
+    return s,tx.Commit()
 }
