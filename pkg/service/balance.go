@@ -16,3 +16,7 @@ func NewBalanceService(repo *repository.Repository)*BalanceService{
 func (s *BalanceService)ChangeUserBalance(balance models.Balance,tr_type string)(string,error){
     return s.repo.ChangeUserBalance(balance,tr_type)
 }
+
+func (s *BalanceService)GetBalanceById(id int)(models.Balance,error){
+    return s.repo.GetBalanceById(id)
+}

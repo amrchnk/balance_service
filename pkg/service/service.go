@@ -7,6 +7,7 @@ import (
 
 type Balance interface{
     ChangeUserBalance(balance models.Balance,tr_type string)(string,error)
+    GetBalanceById(id int)(models.Balance,error)
 }
 
 type Service struct{

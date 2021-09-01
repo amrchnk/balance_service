@@ -16,7 +16,7 @@ func NewBalancePostgres(db *sqlx.DB) *BalancePostgres{
 
 func (r *BalancePostgres) ChangeUserBalance(input models.Balance, tr_type string)(string,error){
     var balance float64
-    fmt.Println(input.Balance, input.UserId)
+    //fmt.Println(input.Balance, input.UserId)
     //Transaction start
 	tx,err:=r.db.Begin()
 	if err!=nil{
@@ -39,8 +39,15 @@ func (r *BalancePostgres) ChangeUserBalance(input models.Balance, tr_type string
     }
 // 	fmt.Println("result ",row)
 
-    s:=fmt.Sprintf("%f", balance)
-//     println(s)
-
+    s:=fmt.Sprintf("%.2f", balance)
     return s,tx.Commit()
+}
+
+func (r *BalancePostgres)GetBalanceById(id int)(models.Balance,error){
+    var balance models.Balance
+
+    query:=fmt.Sprintf("SELECT user_id,balance FROM %s WHERE user_id=$1",balanceTable)
+    err:=r.db.Get(&balance,query,id)
+//     fmt.Println(err)
+    return balance,err
 }
