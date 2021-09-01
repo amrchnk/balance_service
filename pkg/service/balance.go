@@ -20,3 +20,7 @@ func (s *BalanceService)ChangeUserBalance(balance models.Balance,tr_type string)
 func (s *BalanceService)GetBalanceById(id int)(models.Balance,error){
     return s.repo.GetBalanceById(id)
 }
+
+func (s *BalanceService)TransferMoney(senderId,receiverId int, sum float64)([]float64,error){
+    return s.repo.TransferMoney(senderId,receiverId,sum)
+}

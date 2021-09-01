@@ -75,3 +75,29 @@ func (h *Handler) getBalanceById(c *gin.Context){
         "balance (rub)":balance.Balance,
     })
 }
+
+func (h *Handler) transferMoney(c *gin.Context){
+    var input models.TransferQuery
+    if err:=c.BindJSON(&input);err!=nil{
+        c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
+                "id":-1,
+                "status":http.StatusBadRequest,
+                "error": "error in input",
+        })
+        return
+    }
+
+    err:=h.services.Balance.TransferMoney(input.SenderId,input.ReceiverId,input.Sum)
+    if err!=nil{
+        c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
+            "id":-1,
+            "status":http.StatusInternalServerError,
+            "message":err,
+        })
+        return
+    }
+
+    c.JSON(http.StatusOK,map[string]interface{}{
+        "message":"ok",
+    })
+}

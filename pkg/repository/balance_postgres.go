@@ -51,3 +51,28 @@ func (r *BalancePostgres)GetBalanceById(id int)(models.Balance,error){
 //     fmt.Println(err)
     return balance,err
 }
+
+func (r *BalancePostgres)TransferMoney(senderId,receiverId int, sum float64)([]float64,error){
+    var balances [2] float64
+    tx,err:=r.db.Begin()
+	if err!=nil{
+		return err
+	}
+
+	decQuery:=fmt.Sprintf("UPDATE balance SET balance=(SELECT balance FROM balance where user_id=$1)-$2 WHERE user_id=$1 RETURNING balance")
+    row:=tx.QueryRow(decQuery,senderId,sum)
+    err=row.Scan(&balance)
+    if err!=nil{
+        tx.Rollback()
+        return err
+    }
+
+	incQuery:=fmt.Sprintf("INSERT INTO balance (user_id,balance) VALUES ($1,$2) ON CONFLICT (user_id) DO UPDATE SET balance=(select balance from balance where user_id = $1) + $2")
+    _,err=tx.Exec(incQuery,receiverId,sum)
+    if err!=nil{
+        tx.Rollback()
+        return err
+    }
+
+    return tx.Commit()
+ }

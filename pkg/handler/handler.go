@@ -20,7 +20,7 @@ func (h *Handler) InitRoutes() *gin.Engine{
     {
         api.POST("/:type",h.changeUserBalance)
         api.GET("/:id",h.getBalanceById)
-//         api.POST("/transfer",h.transferMoney)
+        api.POST("/transfer",h.transferMoney)
     }
 
     return router
