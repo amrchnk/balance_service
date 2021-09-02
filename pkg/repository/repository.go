@@ -11,12 +11,19 @@ type Balance interface{
 	TransferMoney(senderId,receiverId int, sum float64)([]float64,error)
 }
 
+type Transactions interface{
+    CreateTransaction(input models.Transaction)error
+//     GetAllTransactions()
+}
+
 type Repository struct {
 	Balance
+	Transactions
 }
 
 func NewRepository(db *sqlx.DB) *Repository{
 	return &Repository{
 		Balance: NewBalancePostgres(db),
+		Transactions: NewTransactionsPostgres(db),
 	}
 }

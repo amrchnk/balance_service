@@ -18,7 +18,7 @@ type TransferQuery struct{
 
 type TransferResponse struct{
     SenderId int `json:"sender_id"`
-    SenderSum float64 `json:"sender_sum"`
+    SenderSum float64 `json:"sender_sum" db:"sender_sum"`
     ReceiverId int `json:"receiver_id"`
-    ReceiverSum float64 `json:"receiver_sum"`
+    ReceiverSum float64 `json:"receiver_sum" db:"receiver_sum"`
 }

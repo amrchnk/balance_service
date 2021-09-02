@@ -78,6 +78,7 @@ func (h *Handler) getBalanceById(c *gin.Context){
 
 func (h *Handler) transferMoney(c *gin.Context){
     var input models.TransferQuery
+    var balances [] float64
     if err:=c.BindJSON(&input);err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
                 "id":-1,
@@ -87,7 +88,7 @@ func (h *Handler) transferMoney(c *gin.Context){
         return
     }
 
-    err:=h.services.Balance.TransferMoney(input.SenderId,input.ReceiverId,input.Sum)
+    balances,err:=h.services.Balance.TransferMoney(input.SenderId,input.ReceiverId,input.Sum)
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
             "id":-1,
@@ -96,8 +97,11 @@ func (h *Handler) transferMoney(c *gin.Context){
         })
         return
     }
-
-    c.JSON(http.StatusOK,map[string]interface{}{
-        "message":"ok",
-    })
+    res:=models.TransferResponse{
+        SenderId: input.SenderId,
+        SenderSum: balances[0],
+        ReceiverId: input.ReceiverId,
+        ReceiverSum: balances[1],
+    }
+    c.JSON(http.StatusOK,res)
 }
