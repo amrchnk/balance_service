@@ -16,16 +16,16 @@ func NewHandler(services *service.Service) *Handler{
 func (h *Handler) InitRoutes() *gin.Engine{
     router:=gin.New()
 
-    api:=router.Group("/balance")
+    b_api:=router.Group("/balance")
     {
-        api.POST("/:type",h.changeUserBalance)
-        api.GET("/:id",h.getBalanceById)
-        api.POST("/transfer",h.transferMoney)
+        b_api.POST("/:type",h.changeUserBalance)
+        b_api.GET("/:id",h.getBalanceById)
+        b_api.POST("/transfer",h.transferMoney)
     }
 
-    api:=router.Group("/transactions")
+    t_api:=router.Group("/transactions")
     {
-        api.GET("/",h.getAllTransactions)
+        t_api.GET("/",h.getAllTransactions)
 //         api.GET("/:id",h.getTransactionById)
     }
 

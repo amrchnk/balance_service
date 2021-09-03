@@ -13,7 +13,7 @@ type Balance interface{
 
 type Transactions interface{
     CreateTransaction(input models.Transaction)(string,error)
-//     GetAllTransactions()
+    GetAllTransactions(input models.AddressReq)([]models.Transaction,error)
 }
 
 type Repository struct {

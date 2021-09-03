@@ -11,12 +11,18 @@ type Balance interface{
     TransferMoney(senderId,receiverId int, sum float64)([]float64,error)
 }
 
+type Transactions interface{
+    GetAllTransactions(input models.AddressReq)([]models.Transaction,error)
+}
+
 type Service struct{
     Balance
+    Transactions
 }
 
 func NewService(repos *repository.Repository) *Service{
     return &Service{
         Balance: NewBalanceService(repos),
+        Transactions: NewTransactionsService(repos),
     }
 }
