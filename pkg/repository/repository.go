@@ -12,7 +12,7 @@ type Balance interface{
 }
 
 type Transactions interface{
-    CreateTransaction(input models.Transaction)error
+    CreateTransaction(input models.Transaction)(string,error)
 //     GetAllTransactions()
 }
 

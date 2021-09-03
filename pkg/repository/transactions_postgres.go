@@ -10,23 +10,22 @@ type TransactionsPostgres struct{
 	db *sqlx.DB
 }
 
-func NewTransactionsPostgres(db *sqlx.DB) *BalancePostgres{
+func NewTransactionsPostgres(db *sqlx.DB) *TransactionsPostgres{
 	return &TransactionsPostgres{db:db}
 }
 
-func (r *BalancePostgres) CreateTransaction(input models.Transaction)error{
+func (r *TransactionsPostgres) CreateTransaction(input models.Transaction)(string,error){
     //Transaction start
 	tx,err:=r.db.Begin()
 	if err!=nil{
-		return err
+		return "problem",err
 	}
     createQuery:=fmt.Sprintf("INSERT INTO %s (user_id,type_t,amount,description) VALUES ($1,$2,$3,$4)",transactionsTable)
 
-	_,err:=tx.Exec(createQuery,input.Title,advert.Description,advert.Price)
+	_,err=tx.Exec(createQuery,input.UserId,input.Type,input.Amount,input.Description)
 	if err!=nil{
 		tx.Rollback()
-		return 0,err
+		return "problem",err
 	}
-
-	return id,tx.Commit()
+	return "Ok",tx.Commit()
 }

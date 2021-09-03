@@ -23,5 +23,11 @@ func (h *Handler) InitRoutes() *gin.Engine{
         api.POST("/transfer",h.transferMoney)
     }
 
+    api:=router.Group("/transactions")
+    {
+        api.GET("/",h.getAllTransactions)
+//         api.GET("/:id",h.getTransactionById)
+    }
+
     return router
 }

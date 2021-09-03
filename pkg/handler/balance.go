@@ -10,6 +10,7 @@ import (
 
 func (h *Handler) changeUserBalance(c *gin.Context){
     var input models.Balance
+    //var transact models.Transaction
 
     if err:=c.BindJSON(&input);err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
@@ -21,7 +22,6 @@ func (h *Handler) changeUserBalance(c *gin.Context){
     }
 
     tr_type:=c.Param("type")
-//     fmt.Println("type: ",tr_type)
     if err:=ValidateType(tr_type);!err{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
             "id":-1,
