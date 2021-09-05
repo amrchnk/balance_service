@@ -10,6 +10,17 @@ type Balance struct{
     Balance float64 `json:"balance"`
 }
 
+type UserBalanceQuery struct{
+    UserId int `json:"user_id"`
+    Currency string `json:"currency"`
+}
+
+type UserBalanceResponse struct{
+    UserId int `json:"user_id"`
+    Currency string `json:"currency"`
+    Balance float64 `json:"balance"`
+}
+
 type TransferQuery struct{
     SenderId int `json:"sender_id"`
     ReceiverId int `json:"receiver_id"`

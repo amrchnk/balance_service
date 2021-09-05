@@ -49,3 +49,23 @@ func (r *TransactionsPostgres) GetAllTransactions(input models.AddressReq)([]mod
     }
     return tr_mas,nil
 }
+
+func (r *TransactionsPostgres) GetTransactionByUserId(id int,input models.AddressReq)([]models.Transaction,error){
+    var tr_mas []models.Transaction
+    s:=""
+    s+=fmt.Sprintf(" ORDER BY %s",input.Sort)
+    switch {
+        case input.Direction=="up":
+            s+=" ASC"
+        default:
+            s+=" DESC"
+    }
+    query:=fmt.Sprintf("SELECT user_id,type_t,amount,description,created FROM %s WHERE user_id=$1"+s, transactionsTable)
+    fmt.Println(query)
+    fmt.Println(input.Sort)
+    if err:=r.db.Select(&tr_mas,query,id); err!=nil{
+        fmt.Println(err)
+        return nil,err
+    }
+    return tr_mas,nil
+}

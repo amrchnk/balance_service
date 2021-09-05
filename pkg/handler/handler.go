@@ -26,7 +26,7 @@ func (h *Handler) InitRoutes() *gin.Engine{
     t_api:=router.Group("/transactions")
     {
         t_api.GET("/",h.getAllTransactions)
-//         api.GET("/:id",h.getTransactionById)
+        t_api.GET("/:id",h.getTransactionByUserId)
     }
 
     return router

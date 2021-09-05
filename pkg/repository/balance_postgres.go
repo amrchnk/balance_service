@@ -43,11 +43,15 @@ func (r *BalancePostgres) ChangeUserBalance(input models.Balance, tr_type string
     return s,tx.Commit()
 }
 
-func (r *BalancePostgres)GetBalanceById(id int)(models.Balance,error){
-    var balance models.Balance
+func (r *BalancePostgres)GetBalanceById(id int)(float64,error){
+    var balance float64
 
-    query:=fmt.Sprintf("SELECT user_id,balance FROM %s WHERE user_id=$1",balanceTable)
-    err:=r.db.Get(&balance,query,id)
+    query:=fmt.Sprintf("SELECT balance FROM %s WHERE user_id=$1",balanceTable)
+    row:=r.db.QueryRow(query,id)
+    err:=row.Scan(&balance)
+    if err!=nil{
+        return balance,err
+    }
 //     fmt.Println(err)
     return balance,err
 }

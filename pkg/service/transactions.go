@@ -17,3 +17,7 @@ func NewTransactionsService(repo *repository.Repository)*TransactionsService{
 func (s *TransactionsService) GetAllTransactions(input models.AddressReq)([]models.Transaction,error){
     return s.repo.GetAllTransactions(input)
 }
+
+func (s *TransactionsService) GetTransactionByUserId(id int,input models.AddressReq)([]models.Transaction,error){
+    return s.repo.GetTransactionByUserId(id,input)
+}

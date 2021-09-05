@@ -48,8 +48,38 @@ func (h *Handler) changeUserBalance(c *gin.Context){
     })
 }
 
+// func (h *Handler) getBalanceById(c *gin.Context){
+//     var balance models.Balance
+//     id,err:=strconv.Atoi(c.Param("id"))
+//     if err!=nil{
+//         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
+//             "id":-1,
+//             "status":http.StatusBadRequest,
+//             "message":"Invalid id",
+//         })
+//         return
+//     }
+//
+//     balance,err=h.services.Balance.GetBalanceById(id)
+//     if err!=nil{
+//         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
+//             "id":-1,
+//             "status":http.StatusInternalServerError,
+//             "message":err,
+//         })
+//         return
+//     }
+//     if currency=="USD"{
+//
+//     }
+//     c.JSON(http.StatusOK,map[string]interface{}{
+//         "id":balance.UserId,
+//         "balance (rub)":balance.Balance,
+//     })
+// }
+
 func (h *Handler) getBalanceById(c *gin.Context){
-    var balance models.Balance
+    var req models.UserBalanceQuery
     id,err:=strconv.Atoi(c.Param("id"))
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
@@ -59,8 +89,9 @@ func (h *Handler) getBalanceById(c *gin.Context){
         })
         return
     }
-
-    balance,err=h.services.Balance.GetBalanceById(id)
+    req.UserId,req.Currency=id,c.Query("currency")
+//     fmt.Printf(req.Currency)
+    res,err:=h.services.Balance.GetBalanceById(req)
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
             "id":-1,
@@ -69,11 +100,7 @@ func (h *Handler) getBalanceById(c *gin.Context){
         })
         return
     }
-
-    c.JSON(http.StatusOK,map[string]interface{}{
-        "id":balance.UserId,
-        "balance (rub)":balance.Balance,
-    })
+    c.JSON(http.StatusOK,res)
 }
 
 func (h *Handler) transferMoney(c *gin.Context){

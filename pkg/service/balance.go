@@ -4,6 +4,8 @@ import (
     "github.com/amrchnk/balance_service/pkg/models"
     "github.com/amrchnk/balance_service/pkg/repository"
     "fmt"
+    "net/http"
+    "os"
 )
 
 type BalanceService struct{
@@ -32,8 +34,28 @@ func (s *BalanceService)ChangeUserBalance(balance models.Balance,tr_type string)
     return res,err
 }
 
-func (s *BalanceService)GetBalanceById(id int)(models.Balance,error){
-    return s.repo.GetBalanceById(id)
+func (s *BalanceService)GetBalanceById(input models.UserBalanceQuery)(models.UserBalanceResponse,error){
+    var res models.UserBalanceResponse
+    balance,err:=s.repo.GetBalanceById(input.UserId)
+    if err!=nil{
+        return res,err
+    }
+    fmt.Println(input.Currency)
+    fmt.Println(balance)
+    if (input.Currency!=""){
+        url:=fmt.Sprintf("https://api.exchangeratesapi.io/v1/convert?access_key=%s&from=RUB&to=%s&amount=%s",os.Getenv("API_KEY"),input.Currency,fmt.Sprintf("%.2f", balance))
+        resp, err := http.Get(url)
+        if err != nil {
+            fmt.Println(err)
+            return res,err
+        }
+        fmt.Println(url)
+        fmt.Println(resp)
+    }
+//     res.Currency="RUB"
+    res.UserId,res.Balance=input.UserId,balance
+    return res,nil
+//     res.UserId=input.UserId
 }
 
 func (s *BalanceService)TransferMoney(senderId,receiverId int, sum float64)([]float64,error){
