@@ -33,7 +33,7 @@ func (h *Handler) getAllTransactions(c *gin.Context){
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
                 "id":-1,
                 "status":http.StatusInternalServerError,
-                "message": err,
+                "message": err.Error(),
         })
         return
     }
@@ -93,7 +93,7 @@ func (h *Handler) getTransactionByUserId (c *gin.Context){
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
                 "id":-1,
                 "status":http.StatusInternalServerError,
-                "message": err,
+                "message": err.Error(),
         })
         return
     }

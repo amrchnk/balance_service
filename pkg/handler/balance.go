@@ -4,19 +4,17 @@ import (
     "github.com/amrchnk/balance_service/pkg/models"
     "github.com/gin-gonic/gin"
     "net/http"
-    "fmt"
+//     "fmt"
     "strconv"
 )
 
 func (h *Handler) changeUserBalance(c *gin.Context){
     var input models.Balance
-    //var transact models.Transaction
 
     if err:=c.BindJSON(&input);err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-                "id":-1,
-                "status":http.StatusBadRequest,
-                "error": "error in input",
+            "status":http.StatusBadRequest,
+            "error": "error in input",
         })
         return
     }
@@ -24,9 +22,8 @@ func (h *Handler) changeUserBalance(c *gin.Context){
     tr_type:=c.Param("type")
     if err:=ValidateType(tr_type);!err{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-            "id":-1,
             "status":http.StatusBadRequest,
-            "error": "Unknown type of transaction",
+            "error": "Unknown type of operation",
         })
         return
     }
@@ -34,9 +31,8 @@ func (h *Handler) changeUserBalance(c *gin.Context){
     str,err:=h.services.Balance.ChangeUserBalance(input,tr_type)
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
-                "id":-1,
-                "status":http.StatusInternalServerError,
-                "message": err,
+            "status":http.StatusInternalServerError,
+            "message": err.Error(),
         })
         return
     }
@@ -53,20 +49,17 @@ func (h *Handler) getBalanceById(c *gin.Context){
     id,err:=strconv.Atoi(c.Param("id"))
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-            "id":-1,
             "status":http.StatusBadRequest,
             "message":"Invalid id",
         })
         return
     }
     req.UserId,req.Currency=id,c.Query("currency")
-    fmt.Printf(req.Currency)
     res,err:=h.services.Balance.GetBalanceById(req)
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
-            "id":-1,
             "status":http.StatusInternalServerError,
-            "message":err,
+            "message":err.Error(),
         })
         return
     }
@@ -78,7 +71,6 @@ func (h *Handler) transferMoney(c *gin.Context){
     var balances [] float64
     if err:=c.BindJSON(&input);err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-                "id":-1,
                 "status":http.StatusBadRequest,
                 "error": "error in input",
         })
@@ -88,9 +80,8 @@ func (h *Handler) transferMoney(c *gin.Context){
     balances,err:=h.services.Balance.TransferMoney(input.SenderId,input.ReceiverId,input.Sum)
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
-            "id":-1,
             "status":http.StatusInternalServerError,
-            "message":err,
+            "message":err.Error(),
         })
         return
     }

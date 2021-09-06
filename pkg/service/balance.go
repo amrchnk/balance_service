@@ -9,6 +9,7 @@ import (
     "encoding/json"
     "io/ioutil"
     "errors"
+    "math"
 )
 
 const defaultCur="RUB"
@@ -68,7 +69,7 @@ func (s *BalanceService)GetBalanceById(input models.UserBalanceQuery)(models.Use
             return res,errors.New("Incorrect currency")
         }
         res.Currency=input.Currency
-        res.Balance=balance/(data.Rates[defaultCur]/data.Rates[input.Currency])
+        res.Balance=math.Round(balance/(data.Rates[defaultCur]/data.Rates[input.Currency])*100)/100
         return res,nil
     }
     res.Currency="RUB"

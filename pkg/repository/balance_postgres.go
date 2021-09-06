@@ -16,14 +16,13 @@ func NewBalancePostgres(db *sqlx.DB) *BalancePostgres{
 
 func (r *BalancePostgres) ChangeUserBalance(input models.Balance, tr_type string)(string,error){
     var balance float64
-    //fmt.Println(input.Balance, input.UserId)
     //Transaction start
 	tx,err:=r.db.Begin()
 	if err!=nil{
 	    s:=fmt.Sprintf("%f", balance)
 		return s,err
 	}
-	//СДЕЛАТЬ ПРОВЕРКУ tr_type....
+
 	Query:=""
     if tr_type=="increase"{
         Query=fmt.Sprint("INSERT INTO balance (user_id,balance) VALUES ($1,$2) ON CONFLICT (user_id) DO UPDATE SET balance=(select balance from balance where user_id = $1) + $2 RETURNING balance")
@@ -37,7 +36,6 @@ func (r *BalancePostgres) ChangeUserBalance(input models.Balance, tr_type string
         s:=fmt.Sprintf("%f", balance)
         return s,err
     }
-// 	fmt.Println("result ",row)
 
     s:=fmt.Sprintf("%.2f", balance)
     return s,tx.Commit()
@@ -64,7 +62,7 @@ func (r *BalancePostgres)TransferMoney(senderId,receiverId int, sum float64)([]f
 		return balances,err
 	}
 
-	decQuery:=fmt.Sprintf("UPDATE balance SET balance=(SELECT balance FROM balance where user_id=$1)-$2 WHERE user_id=$1 RETURNING balance as sender_sum")
+	decQuery:=fmt.Sprintf("UPDATE balance SET balance=(SELECT balance FROM balance where user_id=$1)-$2 WHERE user_id=$1 RETURNING balance as sender_balance")
     row:=tx.QueryRow(decQuery,senderId,sum)
     err=row.Scan(&balance)
     if err!=nil{
@@ -73,7 +71,7 @@ func (r *BalancePostgres)TransferMoney(senderId,receiverId int, sum float64)([]f
     }
     balances=append(balances,balance)
 
-	incQuery:=fmt.Sprintf("INSERT INTO balance (user_id,balance) VALUES ($1,$2) ON CONFLICT (user_id) DO UPDATE SET balance=(select balance from balance where user_id = $1) + $2 RETURNING balance as receiver_sum")
+	incQuery:=fmt.Sprintf("INSERT INTO balance (user_id,balance) VALUES ($1,$2) ON CONFLICT (user_id) DO UPDATE SET balance=(select balance from balance where user_id = $1) + $2 RETURNING balance as receiver_balance")
     row=tx.QueryRow(incQuery,receiverId,sum)
     err=row.Scan(&balance)
     if err!=nil{
