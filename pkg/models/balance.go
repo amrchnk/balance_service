@@ -33,3 +33,10 @@ type TransferResponse struct{
     ReceiverId int `json:"receiver_id"`
     ReceiverSum float64 `json:"receiver_sum" db:"receiver_sum"`
 }
+
+type MessageAPI struct{
+    Success bool `json:"success"`
+    Base string `json:"base"`
+    Date string `json:"date"`
+    Rates map[string]float64 `json:"rates"`
+}

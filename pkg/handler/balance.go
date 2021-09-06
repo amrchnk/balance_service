@@ -4,7 +4,7 @@ import (
     "github.com/amrchnk/balance_service/pkg/models"
     "github.com/gin-gonic/gin"
     "net/http"
-//     "fmt"
+    "fmt"
     "strconv"
 )
 
@@ -48,36 +48,6 @@ func (h *Handler) changeUserBalance(c *gin.Context){
     })
 }
 
-// func (h *Handler) getBalanceById(c *gin.Context){
-//     var balance models.Balance
-//     id,err:=strconv.Atoi(c.Param("id"))
-//     if err!=nil{
-//         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-//             "id":-1,
-//             "status":http.StatusBadRequest,
-//             "message":"Invalid id",
-//         })
-//         return
-//     }
-//
-//     balance,err=h.services.Balance.GetBalanceById(id)
-//     if err!=nil{
-//         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
-//             "id":-1,
-//             "status":http.StatusInternalServerError,
-//             "message":err,
-//         })
-//         return
-//     }
-//     if currency=="USD"{
-//
-//     }
-//     c.JSON(http.StatusOK,map[string]interface{}{
-//         "id":balance.UserId,
-//         "balance (rub)":balance.Balance,
-//     })
-// }
-
 func (h *Handler) getBalanceById(c *gin.Context){
     var req models.UserBalanceQuery
     id,err:=strconv.Atoi(c.Param("id"))
@@ -90,7 +60,7 @@ func (h *Handler) getBalanceById(c *gin.Context){
         return
     }
     req.UserId,req.Currency=id,c.Query("currency")
-//     fmt.Printf(req.Currency)
+    fmt.Printf(req.Currency)
     res,err:=h.services.Balance.GetBalanceById(req)
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{

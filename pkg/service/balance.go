@@ -6,7 +6,12 @@ import (
     "fmt"
     "net/http"
     "os"
+    "encoding/json"
+    "io/ioutil"
+    "errors"
 )
+
+const defaultCur="RUB"
 
 type BalanceService struct{
     repo *repository.Repository
@@ -40,22 +45,34 @@ func (s *BalanceService)GetBalanceById(input models.UserBalanceQuery)(models.Use
     if err!=nil{
         return res,err
     }
-    fmt.Println(input.Currency)
-    fmt.Println(balance)
+    res.UserId,res.Balance=input.UserId,balance
     if (input.Currency!=""){
-        url:=fmt.Sprintf("https://api.exchangeratesapi.io/v1/convert?access_key=%s&from=RUB&to=%s&amount=%s",os.Getenv("API_KEY"),input.Currency,fmt.Sprintf("%.2f", balance))
+        var data models.MessageAPI
+        url:=fmt.Sprintf("http://api.exchangeratesapi.io/v1/latest?access_key=%s&format=1",os.Getenv("API_KEY"))
         resp, err := http.Get(url)
         if err != nil {
             fmt.Println(err)
             return res,err
         }
-        fmt.Println(url)
-        fmt.Println(resp)
+        body, err := ioutil.ReadAll(resp.Body)
+        if err != nil {
+            fmt.Println(err)
+            return res,err
+        }
+        err = json.Unmarshal(body, &data)
+        if err != nil {
+            fmt.Println(err)
+            return res,err
+        }
+        if _,ex:=data.Rates[input.Currency];!ex{
+            return res,errors.New("Incorrect currency")
+        }
+        res.Currency=input.Currency
+        res.Balance=balance/(data.Rates[defaultCur]/data.Rates[input.Currency])
+        return res,nil
     }
-//     res.Currency="RUB"
-    res.UserId,res.Balance=input.UserId,balance
+    res.Currency="RUB"
     return res,nil
-//     res.UserId=input.UserId
 }
 
 func (s *BalanceService)TransferMoney(senderId,receiverId int, sum float64)([]float64,error){
