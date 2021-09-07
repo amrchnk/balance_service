@@ -4,7 +4,6 @@ import (
     "github.com/amrchnk/balance_service/pkg/models"
     "github.com/gin-gonic/gin"
     "net/http"
-//     "fmt"
     "strconv"
     "math"
 )
@@ -14,33 +13,34 @@ func (h *Handler) getAllTransactions(c *gin.Context){
         Sort: c.Query("sort"),
         Direction: c.Query("direction"),
     }
+    if input.Sort==""{
+        input.Sort="amount"
+    }
+    if input.Direction==""{
+        input.Direction="up"
+    }
     page,err:=strconv.Atoi(c.Query("page"))
     records,err2:=strconv.Atoi(c.Query("records"))
     if (err!=nil||err2!=nil){
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
-                "id":-1,
-                "status":http.StatusBadRequest,
-                "message": "Invalid type of data",
+            "status":http.StatusBadRequest,
+            "message": "Invalid type of data",
         })
         return
     }
     input.Page,input.Records=page,records
 
-    ////validation
-
     res,err:=h.services.Transactions.GetAllTransactions(input)
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
-                "id":-1,
-                "status":http.StatusInternalServerError,
-                "message": err.Error(),
+            "status":http.StatusInternalServerError,
+            "message": err.Error(),
         })
         return
     }
 
-    if (int(math.Ceil(float64(len(res))/float64(input.Records)))<input.Page){
+    if ((int(math.Ceil(float64(len(res))/float64(input.Records)))<input.Page)||input.Page==0){
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-            "id":-1,
             "status":http.StatusBadRequest,
             "message":"Page number out of range",
         })
@@ -63,13 +63,18 @@ func (h *Handler) getTransactionByUserId (c *gin.Context){
         Sort: c.Query("sort"),
         Direction: c.Query("direction"),
     }
+    if input.Sort==""{
+        input.Sort="amount"
+    }
+    if input.Direction==""{
+        input.Direction="up"
+    }
     page,err:=strconv.Atoi(c.Query("page"))
     records,err2:=strconv.Atoi(c.Query("records"))
     if (err!=nil||err2!=nil){
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
-                "id":-1,
-                "status":http.StatusBadRequest,
-                "message": "Invalid type of data",
+            "status":http.StatusBadRequest,
+            "message": "Invalid type of data",
         })
         return
     }
@@ -78,7 +83,6 @@ func (h *Handler) getTransactionByUserId (c *gin.Context){
     id,err:=strconv.Atoi(c.Param("id"))
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-            "id":-1,
             "status":http.StatusBadRequest,
             "message":"Invalid id",
         })
@@ -91,16 +95,14 @@ func (h *Handler) getTransactionByUserId (c *gin.Context){
 
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
-                "id":-1,
-                "status":http.StatusInternalServerError,
-                "message": err.Error(),
+            "status":http.StatusInternalServerError,
+            "message": err.Error(),
         })
         return
     }
 
     if (int(math.Ceil(float64(len(res))/float64(input.Records)))<input.Page){
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-            "id":-1,
             "status":http.StatusBadRequest,
             "message":"Page number out of range",
         })

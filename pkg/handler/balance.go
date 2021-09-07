@@ -4,7 +4,6 @@ import (
     "github.com/amrchnk/balance_service/pkg/models"
     "github.com/gin-gonic/gin"
     "net/http"
-//     "fmt"
     "strconv"
 )
 
@@ -14,7 +13,7 @@ func (h *Handler) changeUserBalance(c *gin.Context){
     if err:=c.BindJSON(&input);err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
             "status":http.StatusBadRequest,
-            "error": "error in input",
+            "error": "invalid data in body",
         })
         return
     }
@@ -71,13 +70,13 @@ func (h *Handler) transferMoney(c *gin.Context){
     var balances [] float64
     if err:=c.BindJSON(&input);err!=nil{
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
-                "status":http.StatusBadRequest,
-                "error": "error in input",
+            "status":http.StatusBadRequest,
+            "message": "invalid data in body",
         })
         return
     }
 
-    balances,err:=h.services.Balance.TransferMoney(input.SenderId,input.ReceiverId,input.Sum)
+    balances,err:=h.services.Balance.TransferMoney(input)
     if err!=nil{
         c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
             "status":http.StatusInternalServerError,
