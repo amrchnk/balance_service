@@ -22,7 +22,7 @@ func (h *Handler) getAllTransactions(c *gin.Context){
     page,err:=strconv.Atoi(c.Query("page"))
     records,err2:=strconv.Atoi(c.Query("records"))
     if (err!=nil||err2!=nil){
-        c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
+        c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
             "status":http.StatusBadRequest,
             "message": "Invalid type of data",
         })
@@ -72,7 +72,7 @@ func (h *Handler) getTransactionByUserId (c *gin.Context){
     page,err:=strconv.Atoi(c.Query("page"))
     records,err2:=strconv.Atoi(c.Query("records"))
     if (err!=nil||err2!=nil){
-        c.AbortWithStatusJSON(http.StatusInternalServerError,map[string]interface{}{
+        c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
             "status":http.StatusBadRequest,
             "message": "Invalid type of data",
         })
@@ -89,8 +89,6 @@ func (h *Handler) getTransactionByUserId (c *gin.Context){
         return
     }
 
-    ////validation
-
     res,err:=h.services.Transactions.GetTransactionByUserId(id,input)
 
     if err!=nil{
@@ -101,7 +99,7 @@ func (h *Handler) getTransactionByUserId (c *gin.Context){
         return
     }
 
-    if (int(math.Ceil(float64(len(res))/float64(input.Records)))<input.Page){
+    if ((int(math.Ceil(float64(len(res))/float64(input.Records)))<input.Page)||input.Page==0){
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
             "status":http.StatusBadRequest,
             "message":"Page number out of range",
