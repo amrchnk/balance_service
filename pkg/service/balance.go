@@ -52,17 +52,14 @@ func (s *BalanceService)GetBalanceById(input models.UserBalanceQuery)(models.Use
         url:=fmt.Sprintf("http://api.exchangeratesapi.io/v1/latest?access_key=%s&format=1",os.Getenv("API_KEY"))
         resp, err := http.Get(url)
         if err != nil {
-            fmt.Println(err)
             return res,err
         }
         body, err := ioutil.ReadAll(resp.Body)
         if err != nil {
-            fmt.Println(err)
             return res,err
         }
         err = json.Unmarshal(body, &data)
         if err != nil {
-            fmt.Println(err)
             return res,err
         }
         if _,ex:=data.Rates[input.Currency];!ex{
@@ -76,24 +73,24 @@ func (s *BalanceService)GetBalanceById(input models.UserBalanceQuery)(models.Use
     return res,nil
 }
 
-func (s *BalanceService)TransferMoney(senderId,receiverId int, sum float64)([]float64,error){
+func (s *BalanceService)TransferMoney(input models.TransferQuery)([]float64,error){
     var mas []float64
     from:=models.Transaction{
-        UserId:senderId,
+        UserId:input.SenderId,
         Type: "outgoing transfer",
-        Amount: sum,
-        Description: fmt.Sprint("money transfer to user with id=",receiverId),
+        Amount: input.Sum,
+        Description: fmt.Sprint("money transfer to user with id=",input.ReceiverId),
     }
     to:=models.Transaction{
-        UserId:receiverId,
+        UserId: input.ReceiverId,
         Type: "incoming transfer",
-        Amount: sum,
-        Description: fmt.Sprint("money transfer from user with id=",senderId),
+        Amount: input.Sum,
+        Description: fmt.Sprint("money transfer from user with id=",input.SenderId),
     }
-    res,err:=s.repo.TransferMoney(senderId,receiverId,sum)
+    res,err:=s.repo.TransferMoney(input)
 
     if err!=nil{
-        return s.repo.TransferMoney(senderId,receiverId,sum)
+        return s.repo.TransferMoney(input)
     }
 
     if _,er:=s.repo.CreateTransaction(to);er!=nil{

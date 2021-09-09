@@ -54,7 +54,7 @@ func (r *BalancePostgres)GetBalanceById(id int)(float64,error){
     return balance,err
 }
 
-func (r *BalancePostgres)TransferMoney(senderId,receiverId int, sum float64)([]float64,error){
+func (r *BalancePostgres)TransferMoney(input models.TransferQuery)([]float64,error){
     balances:= make([]float64, 0)
     var balance float64
     tx,err:=r.db.Begin()
@@ -63,7 +63,7 @@ func (r *BalancePostgres)TransferMoney(senderId,receiverId int, sum float64)([]f
 	}
 
 	decQuery:=fmt.Sprintf("UPDATE balance SET balance=(SELECT balance FROM balance where user_id=$1)-$2 WHERE user_id=$1 RETURNING balance as sender_balance")
-    row:=tx.QueryRow(decQuery,senderId,sum)
+    row:=tx.QueryRow(decQuery,input.SenderId,input.Sum)
     err=row.Scan(&balance)
     if err!=nil{
         tx.Rollback()
@@ -72,7 +72,7 @@ func (r *BalancePostgres)TransferMoney(senderId,receiverId int, sum float64)([]f
     balances=append(balances,balance)
 
 	incQuery:=fmt.Sprintf("INSERT INTO balance (user_id,balance) VALUES ($1,$2) ON CONFLICT (user_id) DO UPDATE SET balance=(select balance from balance where user_id = $1) + $2 RETURNING balance as receiver_balance")
-    row=tx.QueryRow(incQuery,receiverId,sum)
+    row=tx.QueryRow(incQuery,input.ReceiverId,input.Sum)
     err=row.Scan(&balance)
     if err!=nil{
         tx.Rollback()

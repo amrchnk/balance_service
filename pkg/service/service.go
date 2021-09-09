@@ -5,10 +5,12 @@ import (
     "github.com/amrchnk/balance_service/pkg/repository"
 )
 
+//go:generate go run github.com/golang/mock/mockgen -source=service.go -destination=mocks/mock.go
+
 type Balance interface{
     ChangeUserBalance(balance models.Balance,tr_type string)(string,error)
     GetBalanceById(input models.UserBalanceQuery)(models.UserBalanceResponse,error)
-    TransferMoney(senderId,receiverId int, sum float64)([]float64,error)
+    TransferMoney(input models.TransferQuery)([]float64,error)
 }
 
 type Transactions interface{

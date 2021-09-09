@@ -8,7 +8,7 @@ import (
 type Balance interface{
 	ChangeUserBalance(input models.Balance, tr_type string)(string,error)
 	GetBalanceById(id int)(float64,error)
-	TransferMoney(senderId,receiverId int, sum float64)([]float64,error)
+	TransferMoney(input models.TransferQuery)([]float64,error)
 }
 
 type Transactions interface{

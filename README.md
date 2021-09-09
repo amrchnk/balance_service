@@ -6,7 +6,7 @@
 
 [Подробнее...](https://github.com/avito-tech/autumn-2021-intern-assignment)
 
-##API-методы
+## Описание API-методов
 
 ***Метод начисления средств на баланс***
 
@@ -57,15 +57,6 @@ http://localhost:8000/balance/:type [POST]
     "id": 1,
     "message": "Current balance in rubles: 270.45",
     "status": 200
-}
-```
-
-Ответ (при попытке снятия средств сверх остатка):
-```
-{
-    "message": "pq: новая строка в отношении \"balance\" нарушает ограничение-проверку 
-    \"balance_balance_check\"",
-    "status": 500
 }
 ```
 
@@ -129,7 +120,134 @@ localhost:8000/balance/transfer [GET]
 ```
 ***Метод получения списка транзакций***
 
-Получение списка всех транзакций определенного пользователя
+Получение списка всех транзакций
+```
+localhost:8000/transactions/ [GET]
+```
+Запрос:
+```
+localhost:8000/transactions/?sort=created&page=1&records=10&direction=down
+```
+Принимает следующие параметры в адресной строке:
+- direction – направление сортировки (по возрастанию/убыванию, принимает значения up (по умолчанию)/down)
+- page – номер страницы
+- records – количество записей на странице
+- sort – тип сортировки (amount – по балансу (стоит по умолчанию), created – по дате).
 
+Ответ:
+```
+[
+    {
+        "user_id": 1,
+        "type": "outgoing transfer",
+        "amount": 70,
+        "description": "money transfer to user with id=2",
+        "created": "2021-09-06T23:29:36.978176Z"
+    },
+    {
+        "user_id": 2,
+        "type": "incoming transfer",
+        "amount": 70,
+        "description": "money transfer from user with id=1",
+        "created": "2021-09-06T23:29:36.976598Z"
+    },
+    {
+        "user_id": 1,
+        "type": "increase in balance",
+        "amount": 70,
+        "description": "",
+        "created": "2021-09-06T23:28:37.715262Z"
+    },
+    {
+        "user_id": 1,
+        "type": "increase in balance",
+        "amount": 70,
+        "description": "",
+        "created": "2021-09-06T23:27:58.153518Z"
+    },
+    {
+        "user_id": 1,
+        "type": "outgoing transfer",
+        "amount": 70,
+        "description": "money transfer to user with id=4",
+        "created": "2021-09-06T23:27:39.233541Z"
+    }
+]
+```
+Получение списка транзакций одного пользователя
+
+```
+localhost:8000/transactions/:id [GET]
+```
+Запрос:
+```
+localhost:8000/transactions/1?sort=created&page=1&records=5&direction=down
+```
+
+Ответ:
+```
+[
+    {
+        "user_id": 1,
+        "type": "outgoing transfer",
+        "amount": 70,
+        "description": "money transfer to user with id=2",
+        "created": "2021-09-06T23:29:36.978176Z"
+    },
+    {
+        "user_id": 1,
+        "type": "increase in balance",
+        "amount": 70,
+        "description": "",
+        "created": "2021-09-06T23:28:37.715262Z"
+    },
+    {
+        "user_id": 1,
+        "type": "increase in balance",
+        "amount": 70,
+        "description": "",
+        "created": "2021-09-06T23:27:58.153518Z"
+    },
+    {
+        "user_id": 1,
+        "type": "outgoing transfer",
+        "amount": 70,
+        "description": "money transfer to user with id=4",
+        "created": "2021-09-06T23:27:39.233541Z"
+    },
+    {
+        "user_id": 1,
+        "type": "outgoing transfer",
+        "amount": 70,
+        "description": "money transfer to user with id=3",
+        "created": "2021-09-06T23:27:25.889813Z"
+    }
+]
+```
+**Примеры ответов при ошибочных запросах**
+
+- Метод списания/начисления 
+
+Ответ (при попытке снятия средств сверх остатка):
+```
+{
+    "message": "pq: новая строка в отношении \"balance\" нарушает ограничение-проверку 
+    \"balance_balance_check\"",
+    "status": 500
+}
+```
+
+- Метод получения баланса пользователя при некорректном названии валюты
+Запрос:
+```
+localhost:8000/balance/1?currency=US
+```
+Ответ:
+```
+{
+    "message": "Incorrect currency",
+    "status": 500
+}
+```
 
 ## Запуск приложения
