@@ -244,6 +244,7 @@ localhost:8000/transactions/1?sort=created&page=1&records=5&direction=down
 ```
 
 - Метод получения баланса пользователя при некорректном названии валюты
+
 Запрос:
 ```
 localhost:8000/balance/1?currency=US
