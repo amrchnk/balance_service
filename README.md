@@ -254,9 +254,13 @@ localhost:8000/balance/1?currency=US
 
 Для запуска приложения необходимо выполнить последовательно следующие команды в корневой папке проекта:
 ```
-docker-compose --build app
+docker-compose up --build app
 ```
 
 ```
 docker-compose up app
+```
+Запуск тестов в директории handler (с выводом процента покрытия, в моем случае получилось покрыть 85% модуля):
+```
+go test -v -cover
 ```

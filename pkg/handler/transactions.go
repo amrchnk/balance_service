@@ -6,6 +6,7 @@ import (
     "net/http"
     "strconv"
     "math"
+//     "fmt"
 )
 
 func (h *Handler) getAllTransactions(c *gin.Context){
@@ -24,7 +25,7 @@ func (h *Handler) getAllTransactions(c *gin.Context){
     if (err!=nil||err2!=nil){
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
             "status":http.StatusBadRequest,
-            "message": "Invalid type of data",
+            "message": "Invalid type of data for parameters page and records",
         })
         return
     }
@@ -71,10 +72,11 @@ func (h *Handler) getTransactionByUserId (c *gin.Context){
     }
     page,err:=strconv.Atoi(c.Query("page"))
     records,err2:=strconv.Atoi(c.Query("records"))
+
     if (err!=nil||err2!=nil){
         c.AbortWithStatusJSON(http.StatusBadRequest,map[string]interface{}{
             "status":http.StatusBadRequest,
-            "message": "Invalid type of data",
+            "message": "Invalid type of data for parameters page and records",
         })
         return
     }

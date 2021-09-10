@@ -87,7 +87,7 @@ func TestHandler_getAllTransactions(t *testing.T){
             IncRec:"sd",
             mockBehavior: func(s *mock_service.MockTransactions,input models.AddressReq){},
             expectedStatusCode:400,
-            expectedRequestBody:`{"message":"Invalid type of data","status":400}`,
+            expectedRequestBody:`{"message":"Invalid type of data for parameters page and records","status":400}`,
         },
     }
 
@@ -176,7 +176,7 @@ func TestHandler_getTransactionByUserId(t *testing.T){
             IncRec:"d",
             mockBehavior: func(s *mock_service.MockTransactions,id int,input models.AddressReq){},
             expectedStatusCode:400,
-            expectedRequestBody:`{"message":"Invalid type of data","status":400}`,
+            expectedRequestBody:`{"message":"Invalid type of data for parameters page and records","status":400}`,
         },
         {
             name:"Page error",
